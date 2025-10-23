@@ -11,7 +11,7 @@ interface ECGDisplayProps {
 export default function ECGDisplay({ heartRate, pattern, isRunning }: ECGDisplayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
-  const [offset, setOffset] = useState<number>(0);
+  const offsetRef = useRef<number>(0);
   const waveformRef = useRef<ECGPoint[]>([]);
 
   useEffect(() => {
@@ -46,11 +46,11 @@ export default function ECGDisplay({ heartRate, pattern, isRunning }: ECGDisplay
 
       // Draw ECG waveform
       if (waveformRef.current.length > 0) {
-        drawWaveform(ctx, waveformRef.current, width, height, offset);
+        drawWaveform(ctx, waveformRef.current, width, height, offsetRef.current);
       }
 
       // Update offset for scrolling effect
-      setOffset((prev) => (prev + 0.02) % 10);
+      offsetRef.current = (offsetRef.current + 0.02) % 10;
 
       animationRef.current = requestAnimationFrame(draw);
     };
@@ -62,7 +62,7 @@ export default function ECGDisplay({ heartRate, pattern, isRunning }: ECGDisplay
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isRunning, offset]);
+  }, [isRunning]);
 
   return (
     <Card className="bg-slate-950 border-primary/30">
